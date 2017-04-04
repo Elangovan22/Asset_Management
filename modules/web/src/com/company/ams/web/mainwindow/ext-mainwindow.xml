@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        class="com.company.ams.web.mainwindow.ExtAppMainWindow"
+        extends="/com/haulmont/cuba/web/app/mainwindow/mainwindow.xml"
+        messagesPack="com.company.ams.web.mainwindow"
+        xmlns:main="http://schemas.haulmont.com/cuba/mainwindow.xsd">
+    <layout>
+        <split id="foldersSplit">
+            <main:workArea id="workArea">
+                <main:initialLayout>
+                    <vbox height="1024px"
+                          stylename="image"/>
+                </main:initialLayout>
+            </main:workArea>
+        </split>
+    </layout>
+</window>

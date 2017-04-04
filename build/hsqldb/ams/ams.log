@@ -1,0 +1,251 @@
+/*C2*/SET SCHEMA PUBLIC
+DISCONNECT
+/*C3*/SET SCHEMA PUBLIC
+DISCONNECT
+/*C4*/SET SCHEMA PUBLIC
+DISCONNECT
+/*C5*/SET SCHEMA PUBLIC
+DISCONNECT
+/*C6*/SET SCHEMA PUBLIC
+DISCONNECT
+/*C7*/SET SCHEMA PUBLIC
+ drop schema public cascade
+DISCONNECT
+/*C8*/SET SCHEMA PUBLIC
+create table SYS_DB_CHANGELOG (SCRIPT_NAME varchar(300) not null primary key, CREATE_TS timestamp default current_timestamp, IS_INIT integer default 0)
+------------------------------------------------------------------------------------------------------------\u000a-- table for selecting sequence values in HSQL\u000acreate table DUAL (ID integer)
+INSERT INTO DUAL VALUES(0)
+COMMIT
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SYS_SERVER (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    --\u000a    NAME varchar(255),\u000a    IS_RUNNING boolean,\u000a    DATA longvarchar,\u000a    --\u000a    primary key (ID),\u000a    constraint IDX_SYS_SERVER_UNIQ_NAME unique (NAME)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SYS_CONFIG (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    --\u000a    NAME varchar(255),\u000a    VALUE longvarchar,\u000a    --\u000a    primary key (ID),\u000a    constraint IDX_SYS_CONFIG_UNIQ_NAME unique (NAME)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SYS_FILE (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    NAME varchar(500) not null,\u000a    EXT varchar(20),\u000a    FILE_SIZE bigint,\u000a    CREATE_DATE timestamp,\u000a    --\u000a    primary key (ID)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SYS_LOCK_CONFIG (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    --\u000a    NAME varchar(100),\u000a    TIMEOUT_SEC integer,\u000a    --\u000a    primary key (ID)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SYS_ENTITY_STATISTICS (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    --\u000a    NAME varchar(50),\u000a    INSTANCE_COUNT bigint,\u000a    FETCH_UI integer,\u000a    MAX_FETCH_UI integer,\u000a    LAZY_COLLECTION_THRESHOLD integer,\u000a    LOOKUP_SCREEN_THRESHOLD integer,\u000a    --\u000a    primary key (ID)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SYS_SCHEDULED_TASK (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    BEAN_NAME varchar(50),\u000a    METHOD_NAME varchar(50),\u000a    METHOD_PARAMS varchar(1000),\u000a    DEFINED_BY varchar(1) default 'B',\u000a    CLASS_NAME varchar(500),\u000a    SCRIPT_NAME varchar(500),\u000a    USER_NAME varchar(50),\u000a    IS_SINGLETON boolean,\u000a    IS_ACTIVE boolean,\u000a    PERIOD integer,\u000a    TIMEOUT integer,\u000a    START_DATE timestamp,\u000a    TIME_FRAME integer,\u000a    START_DELAY integer,\u000a    PERMITTED_SERVERS varchar(4096),\u000a    LOG_START boolean,\u000a    LOG_FINISH boolean,\u000a    LAST_START_TIME timestamp,\u000a    LAST_START_SERVER varchar(512),\u000a    DESCRIPTION varchar(1000),\u000a    CRON varchar(100),\u000a    SCHEDULING_TYPE varchar(1) default 'P',\u000a    --\u000a    primary key (ID)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SYS_SCHEDULED_EXECUTION (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    --\u000a    TASK_ID varchar(36),\u000a    SERVER varchar(512),\u000a    START_TIME timestamp,\u000a    FINISH_TIME timestamp,\u000a    RESULT longvarchar,\u000a    --\u000a    primary key (ID),\u000a    constraint SYS_SCHEDULED_EXECUTION_TASK foreign key (TASK_ID) references SYS_SCHEDULED_TASK(ID)\u000a)
+\u000acreate index IDX_SYS_SCHEDULED_EXECUTION_TASK_START_TIME  on SYS_SCHEDULED_EXECUTION (TASK_ID, START_TIME)
+\u000acreate index IDX_SYS_SCHEDULED_EXECUTION_TASK_FINISH_TIME on SYS_SCHEDULED_EXECUTION (TASK_ID, FINISH_TIME)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SEC_ROLE (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    NAME varchar(255) not null,\u000a    LOC_NAME varchar(255),\u000a    DESCRIPTION varchar(1000),\u000a    IS_DEFAULT_ROLE boolean,\u000a    ROLE_TYPE integer,\u000a    --\u000a    primary key (ID)\u000a)
+\u000aalter table SEC_ROLE add constraint IDX_SEC_ROLE_UNIQ_NAME unique (NAME, DELETE_TS)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SEC_GROUP (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    NAME varchar(255) not null,\u000a    PARENT_ID varchar(36),\u000a    --\u000a    primary key (ID),\u000a    constraint SEC_GROUP_PARENT foreign key (PARENT_ID) references SEC_GROUP(ID)\u000a)
+\u000aalter table SEC_GROUP add constraint IDX_SEC_GROUP_UNIQ_NAME unique (NAME, DELETE_TS)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SEC_GROUP_HIERARCHY (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    --\u000a    GROUP_ID varchar(36),\u000a    PARENT_ID varchar(36),\u000a    HIERARCHY_LEVEL integer,\u000a    --\u000a    primary key (ID),\u000a    constraint SEC_GROUP_HIERARCHY_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID),\u000a    constraint SEC_GROUP_HIERARCHY_PARENT foreign key (PARENT_ID) references SEC_GROUP(ID)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SEC_USER (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    LOGIN varchar(50) not null,\u000a    LOGIN_LC varchar(50) not null,\u000a    PASSWORD varchar(255),\u000a    NAME varchar(255),\u000a    FIRST_NAME varchar(255),\u000a    LAST_NAME varchar(255),\u000a    MIDDLE_NAME varchar(255),\u000a    POSITION_ varchar(255),\u000a    EMAIL varchar(100),\u000a    LANGUAGE_ varchar(20),\u000a    TIME_ZONE varchar(50),\u000a    TIME_ZONE_AUTO boolean,\u000a    ACTIVE boolean,\u000a    GROUP_ID varchar(36) not null,\u000a    IP_MASK varchar(200),\u000a    CHANGE_PASSWORD_AT_LOGON boolean,\u000a    --\u000a    primary key (ID),\u000a    constraint IDX_SEC_USER_UNIQ_LOGIN unique (LOGIN_LC, DELETE_TS),\u000a    constraint SEC_USER_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SEC_USER_ROLE (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    USER_ID varchar(36),\u000a    ROLE_ID varchar(36),\u000a    --\u000a    primary key (ID),\u000a    constraint SEC_USER_ROLE_USER foreign key (USER_ID) references SEC_USER(ID),\u000a    constraint SEC_USER_ROLE_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID),\u000a    constraint IDX_SEC_USER_ROLE_UNIQ_ROLE unique (USER_ID, ROLE_ID, DELETE_TS)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SEC_PERMISSION (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    PERMISSION_TYPE integer,\u000a    TARGET varchar(100),\u000a    VALUE integer,\u000a    ROLE_ID varchar(36),\u000a    --\u000a    primary key (ID),\u000a    constraint SEC_PERMISSION_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID),\u000a    constraint IDX_SEC_PERMISSION_UNIQUE unique (ROLE_ID, PERMISSION_TYPE, TARGET, DELETE_TS)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SEC_CONSTRAINT (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    CODE varchar(255),\u000a    CHECK_TYPE varchar(50) default 'db',\u000a    OPERATION_TYPE varchar(50) default 'read',\u000a    ENTITY_NAME varchar(255) not null,\u000a    JOIN_CLAUSE varchar(500),\u000a    WHERE_CLAUSE varchar(1000),\u000a    GROOVY_SCRIPT varchar(1000),\u000a    FILTER_XML varchar(1000),\u000a    IS_ACTIVE boolean default true,\u000a    GROUP_ID varchar(36),\u000a    --\u000a    primary key (ID),\u000a    constraint SEC_CONSTRAINT_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SEC_SESSION_ATTR (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    NAME varchar(50),\u000a    STR_VALUE varchar(1000),\u000a    DATATYPE varchar(20),\u000a    GROUP_ID varchar(36),\u000a    --\u000a    primary key (ID),\u000a    constraint SEC_SESSION_ATTR_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SEC_USER_SETTING (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    --\u000a    USER_ID varchar(36),\u000a    CLIENT_TYPE char(1),\u000a    NAME varchar(255),\u000a    VALUE longvarchar,\u000a    --\u000a    primary key (ID),\u000a    constraint SEC_USER_SETTING_USER foreign key (USER_ID) references SEC_USER(ID),\u000a    constraint SEC_USER_SETTING_UNIQ unique (USER_ID, NAME, CLIENT_TYPE)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SEC_USER_SUBSTITUTION (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    USER_ID varchar(36) not null,\u000a    SUBSTITUTED_USER_ID varchar(36) not null,\u000a    START_DATE timestamp,\u000a    END_DATE timestamp,\u000a    --\u000a    primary key (ID),\u000a    constraint FK_SEC_USER_SUBSTITUTION_USER foreign key (USER_ID) references SEC_USER(ID),\u000a    constraint FK_SEC_USER_SUBSTITUTION_SUBSTITUTED_USER foreign key (SUBSTITUTED_USER_ID)\u000a        references SEC_USER(ID)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SEC_LOGGED_ENTITY (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    --\u000a    NAME varchar(100),\u000a    AUTO boolean,\u000a    MANUAL boolean,\u000a    --\u000a    primary key (ID),\u000a    constraint SEC_LOGGED_ENTITY_UNIQ_NAME unique (NAME)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SEC_LOGGED_ATTR (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    --\u000a    ENTITY_ID varchar(36),\u000a    NAME varchar(50),\u000a    --\u000a    primary key (ID),\u000a    constraint FK_SEC_LOGGED_ATTR_ENTITY foreign key (ENTITY_ID) references SEC_LOGGED_ENTITY(ID),\u000a    constraint SEC_LOGGED_ATTR_UNIQ_NAME unique (ENTITY_ID, NAME)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SEC_ENTITY_LOG (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    --\u000a    EVENT_TS timestamp,\u000a    USER_ID varchar(36),\u000a    CHANGE_TYPE char(1),\u000a    ENTITY varchar(100),\u000a    ENTITY_ID varchar(36),\u000a    CHANGES longvarchar,\u000a    --\u000a    primary key (ID),\u000a    constraint FK_SEC_ENTITY_LOG_USER foreign key (USER_ID) references SEC_USER(ID)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SEC_ENTITY_LOG_ATTR (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    --\u000a    ITEM_ID varchar(36),\u000a    NAME varchar(50),\u000a    VALUE varchar(1500),\u000a    VALUE_ID varchar(36),\u000a    MESSAGES_PACK varchar(200),\u000a    --\u000a    primary key (ID),\u000a    constraint FK_SEC_ENTITY_LOG_ATTR_ITEM foreign key (ITEM_ID) references SEC_ENTITY_LOG(ID)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SEC_FILTER (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    COMPONENT varchar(200),\u000a    NAME varchar(255),\u000a    CODE varchar(200),\u000a    XML longvarchar,\u000a    USER_ID varchar(36),\u000a    --\u000a    primary key (ID),\u000a    constraint FK_SEC_FILTER_USER foreign key (USER_ID) references SEC_USER(ID)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SYS_FOLDER (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    FOLDER_TYPE char(1),\u000a    PARENT_ID varchar(36),\u000a    NAME varchar(100),\u000a    TAB_NAME varchar(100),\u000a    SORT_ORDER integer,\u000a    --\u000a    primary key (ID),\u000a    constraint FK_SYS_FOLDER_PARENT foreign key (PARENT_ID) references SYS_FOLDER(ID)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SYS_APP_FOLDER (\u000a    FOLDER_ID varchar(36) not null,\u000a    FILTER_COMPONENT varchar(200),\u000a    FILTER_XML varchar(7000),\u000a    VISIBILITY_SCRIPT longvarchar,\u000a    QUANTITY_SCRIPT longvarchar,\u000a    APPLY_DEFAULT boolean,\u000a    --\u000a    primary key (FOLDER_ID),\u000a    constraint FK_SYS_APP_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SEC_PRESENTATION (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    --\u000a    COMPONENT varchar(200),\u000a    NAME varchar(255),\u000a    XML varchar(7000),\u000a    USER_ID varchar(36),\u000a    IS_AUTO_SAVE boolean,\u000a    --\u000a    primary key (ID),\u000a    constraint SEC_PRESENTATION_USER foreign key (USER_ID) references SEC_USER(ID)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SEC_SEARCH_FOLDER (\u000a    FOLDER_ID varchar(36) not null,\u000a    FILTER_COMPONENT varchar(200),\u000a    FILTER_XML varchar(7000),\u000a    USER_ID varchar(36),\u000a    PRESENTATION_ID varchar(36),\u000a    APPLY_DEFAULT boolean,\u000a    IS_SET boolean,\u000a    ENTITY_TYPE varchar(50),\u000a    --\u000a    primary key (FOLDER_ID),\u000a    constraint FK_SEC_SEARCH_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID),\u000a    constraint FK_SEC_SEARCH_FOLDER_USER foreign key (USER_ID) references SEC_USER(ID),\u000a    constraint FK_SEC_SEARCH_FOLDER_PRESENTATION foreign key (PRESENTATION_ID)\u000a        references SEC_PRESENTATION(ID)\u000a        on delete set null\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SYS_FTS_QUEUE (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    --\u000a    ENTITY_ID varchar(36),\u000a    STRING_ENTITY_ID varchar(255),\u000a    INT_ENTITY_ID integer,\u000a    LONG_ENTITY_ID bigint,\u000a    ENTITY_NAME varchar(200),\u000a    CHANGE_TYPE char(1),\u000a    SOURCE_HOST varchar(255),\u000a    INDEXING_HOST varchar(255),\u000a    FAKE boolean,\u000a    --\u000a    primary key (ID)\u000a)
+\u000acreate index IDX_SYS_FTS_QUEUE_IDXHOST_CRTS on SYS_FTS_QUEUE (INDEXING_HOST, CREATE_TS)
+\u000a--------------------------------------------------------------------------------------------------------------\u000acreate table SEC_SCREEN_HISTORY (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    USER_ID varchar(36),\u000a    CAPTION varchar(255),\u000a    URL varchar(4000),\u000a    ENTITY_ID varchar(36),\u000a    SUBSTITUTED_USER_ID varchar(36),\u000a    --\u000a    primary key (ID),\u000a    constraint FK_SEC_HISTORY_USER foreign key (USER_ID) references SEC_USER (ID),\u000a    constraint FK_SEC_HISTORY_SUBSTITUTED_USER foreign key (SUBSTITUTED_USER_ID) references SEC_USER (ID)\u000a)
+\u000acreate index IDX_SEC_SCREEN_HIST_SUB_USER on SEC_SCREEN_HISTORY (SUBSTITUTED_USER_ID)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SYS_SENDING_MESSAGE (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    ADDRESS_TO longvarchar,\u000a    ADDRESS_FROM varchar(100),\u000a    CAPTION varchar(500),\u000a    EMAIL_HEADERS varchar(500),\u000a    CONTENT_TEXT longvarchar,\u000a    CONTENT_TEXT_FILE_ID varchar(36),\u000a    DEADLINE timestamp,\u000a    STATUS integer,\u000a    DATE_SENT timestamp,\u000a    ATTEMPTS_COUNT integer,\u000a    ATTEMPTS_MADE integer,\u000a    ATTACHMENTS_NAME longvarchar,\u000a    --\u000a    primary key (ID)\u000a)
+\u000aalter table SYS_SENDING_MESSAGE add constraint FK_SYS_SENDING_MESSAGE_CONTENT_FILE foreign key (CONTENT_TEXT_FILE_ID) references SYS_FILE(ID)
+\u000acreate table SYS_SENDING_ATTACHMENT (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    MESSAGE_ID varchar(36),\u000a    CONTENT longvarbinary,\u000a    CONTENT_FILE_ID varchar(36),\u000a    CONTENT_ID varchar(50),\u000a    NAME varchar(500),\u000a    DISPOSITION varchar(50),\u000a    TEXT_ENCODING varchar(50),\u000a    --\u000a    primary key (ID)\u000a)
+\u000aalter table SYS_SENDING_ATTACHMENT add constraint FK_SYS_SENDING_ATTACHMENT_SENDING_MESSAGE foreign key (MESSAGE_ID) references SYS_SENDING_MESSAGE (ID)
+\u000aalter table SYS_SENDING_ATTACHMENT add constraint FK_SYS_SENDING_ATTACHMENT_CONTENT_FILE foreign key (CONTENT_FILE_ID) references SYS_FILE (ID)
+\u000aCREATE INDEX SYS_SENDING_ATTACHMENT_MESSAGE_IDX\u000a  ON SYS_SENDING_ATTACHMENT(MESSAGE_ID )
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SYS_ENTITY_SNAPSHOT (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    --\u000a    ENTITY_META_CLASS varchar(50),\u000a    ENTITY_ID varchar(36),\u000a    AUTHOR_ID varchar(36) not null,\u000a    VIEW_XML longvarchar,\u000a    SNAPSHOT_XML longvarchar,\u000a    SNAPSHOT_DATE timestamp,\u000a    --\u000a    primary key (ID),\u000a    constraint FK_SYS_ENTITY_SNAPSHOT_AUTHOR_ID foreign key (AUTHOR_ID) references SEC_USER(ID)\u000a)
+\u000a-------------------------------------------------------------------------------------------------------------\u000acreate table SYS_CATEGORY(\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    NAME varchar(255) not null,\u000a    SPECIAL varchar(50),\u000a    ENTITY_TYPE varchar(30) not null,\u000a    IS_DEFAULT boolean,\u000a    DISCRIMINATOR integer,\u000a    --\u000a    primary key (ID)\u000a)
+\u000acreate unique index IDX_SYS_CATEGORY_UNIQ_NAME_ENTITY_TYPE on SYS_CATEGORY (NAME, ENTITY_TYPE, DELETE_TS)
+\u000acreate table SYS_CATEGORY_ATTR(\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    CATEGORY_ENTITY_TYPE varchar(4000),\u000a    NAME varchar(255),\u000a    CODE varchar(100) not null,\u000a    CATEGORY_ID varchar(36) not null,\u000a    ENTITY_CLASS varchar(500),\u000a    DATA_TYPE varchar(200),\u000a    DEFAULT_STRING varchar(4000),\u000a    DEFAULT_INT integer,\u000a    DEFAULT_DOUBLE numeric,\u000a    DEFAULT_DATE date,\u000a    DEFAULT_DATE_IS_CURRENT boolean,\u000a    DEFAULT_BOOLEAN boolean,\u000a    DEFAULT_ENTITY_VALUE varchar(36),\u000a    ENUMERATION varchar(500),\u000a    ORDER_NO integer,\u000a    SCREEN varchar(255),\u000a    REQUIRED boolean,\u000a    LOOKUP boolean,\u000a    TARGET_SCREENS varchar(4000),\u000a    WIDTH varchar(20),\u000a    ROWS_COUNT integer,\u000a    --\u000a    primary key (ID)\u000a)
+\u000acreate unique index IDX_CAT_ATTR_ENT_TYPE_AND_CODE on SYS_CATEGORY_ATTR (CATEGORY_ENTITY_TYPE, CODE)
+alter table SYS_CATEGORY_ATTR add constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)
+\u000acreate table SYS_ATTR_VALUE (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    CATEGORY_ATTR_ID varchar(36) not null,\u000a    ENTITY_ID varchar(36),\u000a    STRING_VALUE varchar(4000),\u000a    INTEGER_VALUE integer,\u000a    DOUBLE_VALUE numeric,\u000a    DATE_VALUE date,\u000a    BOOLEAN_VALUE boolean,\u000a    ENTITY_VALUE varchar(36),\u000a    CODE varchar(100),\u000a    --\u000a    primary key (ID)\u000a)
+\u000aalter table SYS_ATTR_VALUE add constraint SYS_ATTR_VALUE_CATEGORY_ATTR_ID foreign key (CATEGORY_ATTR_ID) references SYS_CATEGORY_ATTR(ID)
+\u000a-------------------------------------------------------------------------------------------------------------\u000acreate table SYS_QUERY_RESULT (\u000a    ID identity not null,\u000a    SESSION_ID varchar(36) not null,\u000a    QUERY_KEY integer not null,\u000a    ENTITY_ID varchar(36),\u000a    STRING_ENTITY_ID varchar(255),\u000a    INT_ENTITY_ID integer,\u000a    LONG_ENTITY_ID bigint,\u000a)
+\u000a--------------------------------------------------------------------------------------------------------------\u000acreate table SYS_JMX_INSTANCE (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    NODE_NAME varchar(255),\u000a    ADDRESS varchar(500) not null,\u000a    LOGIN varchar(50) not null,\u000a    PASSWORD varchar(255) not null,\u000a    --\u000a    primary key (ID)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate table SEC_REMEMBER_ME (\u000a    ID varchar(36) not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    VERSION integer,\u000a    --\u000a    USER_ID varchar(36) not null,\u000a    TOKEN varchar(32) not null,\u000a    --\u000a    primary key (ID),\u000a    constraint FK_SEC_REMEMBER_ME_USER foreign key (USER_ID) references SEC_USER(ID)\u000a)
+\u000a------------------------------------------------------------------------------------------------------------\u000acreate function NEWID() returns varchar(36)\u000a   return uuid(uuid())
+INSERT INTO SEC_GROUP VALUES('0fa2b1a5-1d68-4d69-9fbd-dff348347f93','2017-04-04 20:16:58.706000',NULL,0,NULL,NULL,NULL,NULL,'Company',NULL)
+COMMIT
+INSERT INTO SEC_USER VALUES('60885987-1b61-4247-94c7-dff348347f93','2017-04-04 20:16:58.708000',NULL,0,NULL,NULL,NULL,NULL,'admin','admin','cc2229d1b8a052423d9e1c9ef0113b850086586a','Administrator',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,TRUE,'0fa2b1a5-1d68-4d69-9fbd-dff348347f93',NULL,NULL)
+COMMIT
+INSERT INTO SEC_USER VALUES('a405db59-e674-4f63-8afe-269dda788fe8','2017-04-04 20:16:58.710000',NULL,0,NULL,NULL,NULL,NULL,'anonymous','anonymous',NULL,'Anonymous',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,TRUE,'0fa2b1a5-1d68-4d69-9fbd-dff348347f93',NULL,NULL)
+COMMIT
+INSERT INTO SEC_ROLE VALUES('0c018061-b26f-4de2-a5be-dff348347f93','2017-04-04 20:16:58.712000',NULL,0,NULL,NULL,NULL,NULL,'Administrators',NULL,NULL,NULL,10)
+COMMIT
+INSERT INTO SEC_USER_ROLE VALUES('c838be0a-96d0-4ef4-a7c0-dff348347f93','2017-04-04 20:16:58.713000',NULL,0,NULL,NULL,NULL,NULL,'60885987-1b61-4247-94c7-dff348347f93','0c018061-b26f-4de2-a5be-dff348347f93')
+COMMIT
+INSERT INTO SEC_FILTER VALUES('b61d18cb-e79a-46f3-b16d-eaf4aebb10dd','2010-03-01 11:14:06.830000','admin',2,'2010-03-01 11:52:53.170000','admin',NULL,NULL,'[sec$User.browse].genericFilter','Search by role',NULL,'<?xml version="1.0" encoding="UTF-8"?>\u000a<filter>\u000a  <and>\u000a    <c name="UrMxpkfMGn" class="com.haulmont.cuba.security.entity.Role" type="CUSTOM" locCaption="Role" entityAlias="u" join="join u.userRoles ur">ur.role.id = :component$genericFilter.UrMxpkfMGn32565\u000a          <param name="component$genericFilter.UrMxpkfMGn32565">NULL</param>\u000a    </c>\u000a  </and>\u000a</filter>','60885987-1b61-4247-94c7-dff348347f93')
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/init/hsql/create-db.sql','2017-04-04 20:16:59.111000',1)
+COMMIT
+-- begin AMS_NEW_ASSET\u000acreate table AMS_NEW_ASSET (\u000a    ID varchar(36) not null,\u000a    VERSION integer not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    NAME_ID varchar(36),\u000a    ASSETID integer not null,\u000a    COMPANY varchar(255) not null,\u000a    MODELNAME varchar(255) not null,\u000a    QUANTITY integer not null,\u000a    AVAILABLEQUANTITY integer not null,\u000a    COST integer,\u000a    PURCHASEDATE date,\u000a    STATUS integer not null,\u000a    --\u000a    primary key (ID)\u000a)
+\u000a-- end AMS_NEW_ASSET\u000a-- begin AMS_ASSET\u000acreate table AMS_ASSET (\u000a    ID varchar(36) not null,\u000a    VERSION integer not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    NAME varchar(255) not null,\u000a    --\u000a    primary key (ID)\u000a)
+\u000a-- end AMS_ASSET\u000a-- begin AMS_SUPLIER\u000acreate table AMS_SUPLIER (\u000a    ID varchar(36) not null,\u000a    VERSION integer not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    STATE varchar(255),\u000a    PLACE varchar(255),\u000a    NAME varchar(255),\u000a    --\u000a    primary key (ID)\u000a)
+\u000a-- end AMS_SUPLIER\u000a-- begin AMS_INSTANCE\u000acreate table AMS_INSTANCE (\u000a    ID varchar(36) not null,\u000a    VERSION integer not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    USER_ varchar(255),\u000a    NAME varchar(255),\u000a    COMPANY varchar(255),\u000a    MODELNAME varchar(255),\u000a    TOTALQUANTITY integer,\u000a    NEEDEDQUANTITY integer,\u000a    TEAMVIEWER integer,\u000a    ASSETID integer,\u000a    REQUESTEDTIME varchar(255),\u000a    ASSETNEEDEDDATE varchar(255),\u000a    --\u000a    primary key (ID)\u000a)
+\u000a-- end AMS_INSTANCE\u000a-- begin AMS_REQUEST_ASSET\u000acreate table AMS_REQUEST_ASSET (\u000a    ID varchar(36) not null,\u000a    VERSION integer not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    primary key (ID)\u000a)
+\u000a-- end AMS_REQUEST_ASSET\u000a-- begin AMS_RESPONCE__REQUEST\u000acreate table AMS_RESPONCE__REQUEST (\u000a    ID varchar(36) not null,\u000a    VERSION integer not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    primary key (ID)\u000a)
+\u000a-- end AMS_RESPONCE__REQUEST\u000a-- begin AMS_NEW_ASSET_SUPLIER_LINK\u000acreate table AMS_NEW_ASSET_SUPLIER_LINK (\u000a    NEW_ASSET_ID varchar(36) not null,\u000a    SUPLIER_ID varchar(36) not null,\u000a    primary key (NEW_ASSET_ID, SUPLIER_ID)\u000a)
+\u000a-- end AMS_NEW_ASSET_SUPLIER_LINK\u000a-- begin AMS_ASSET_ALLOCATED\u000acreate table AMS_ASSET_ALLOCATED (\u000a    ID varchar(36) not null,\u000a    VERSION integer not null,\u000a    CREATE_TS timestamp,\u000a    CREATED_BY varchar(50),\u000a    UPDATE_TS timestamp,\u000a    UPDATED_BY varchar(50),\u000a    DELETE_TS timestamp,\u000a    DELETED_BY varchar(50),\u000a    --\u000a    USER_ varchar(255),\u000a    ASSETID integer,\u000a    COMPANY varchar(255),\u000a    MODELNAME varchar(255),\u000a    QUANTITY integer,\u000a    NAME varchar(255),\u000a    --\u000a    primary key (ID)\u000a)
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/init/hsql/10.create-db.sql','2017-04-04 20:16:59.259000',1)
+COMMIT
+-- begin AMS_NEW_ASSET\u000aalter table AMS_NEW_ASSET add constraint FK_AMS_NEW_ASSET_NAME foreign key (NAME_ID) references AMS_ASSET(ID)
+\u000acreate unique index IDX_AMS_NEW_ASSET_UNIQ_ASSETID on AMS_NEW_ASSET (ASSETID) 
+\u000acreate index IDX_AMS_NEW_ASSET_NAME on AMS_NEW_ASSET (NAME_ID)
+\u000a-- end AMS_NEW_ASSET\u000a-- begin AMS_NEW_ASSET_SUPLIER_LINK\u000aalter table AMS_NEW_ASSET_SUPLIER_LINK add constraint FK_ANASL_NEW_ASSET foreign key (NEW_ASSET_ID) references AMS_NEW_ASSET(ID)
+\u000aalter table AMS_NEW_ASSET_SUPLIER_LINK add constraint FK_ANASL_SUPLIER foreign key (SUPLIER_ID) references AMS_SUPLIER(ID)
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/init/hsql/20.create-db.sql','2017-04-04 20:16:59.382000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/init/hsql/30.create-db.sql','2017-04-04 20:16:59.404000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/14/140313-ftsQueueIndexingHost.sql','2017-04-04 20:16:59.687000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/14/140405-changeTypeForSysConfigValue.sql','2017-04-04 20:16:59.690000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/14/140708-addRememberMeTable.sql','2017-04-04 20:16:59.692000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/14/140716-changeSysFileSizeType.sql','2017-04-04 20:16:59.696000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/14/141203-setNotNullSysFileName.sql','2017-04-04 20:16:59.699000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/15/150203-sendingMessageEmailHeaders.sql','2017-04-04 20:16:59.703000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/15/150203-userTimeZone.sql','2017-04-04 20:16:59.714000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/15/150205-addSubstituteUserInScreenHistory.sql','2017-04-04 20:16:59.722000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/15/150226-addIndexInScreenHistory.sql','2017-04-04 20:16:59.726000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/15/150310-alterFilterXml.sql','2017-04-04 20:16:59.731000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/15/150417-runtimePropertiesChanges.sql','2017-04-04 20:16:59.736000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/15/150514-categoryEntityTypeInAttribute.sql','2017-04-04 20:16:59.740000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/15/150630-entityClassToCategoryAttribute.sql','2017-04-04 20:16:59.743000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/15/150805-fakeFtsQueue.sql','2017-04-04 20:16:59.745000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/15/151106-extendScheduledTaskFields.sql','2017-04-04 20:16:59.747000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/15/151116-rowLevelSecurity.sql','2017-04-04 20:16:59.749000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/15/151228-sendingMessagesExtendFields.sql','2017-04-04 20:16:59.751000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/15/1512282-addIsActiveToConstraint.sql','2017-04-04 20:16:59.753000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/16/160322-dropUniqSysScheduledTaskBeanMethodConstraint.sql','2017-04-04 20:16:59.755000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/16/160405-createUniqSysCategory.sql','2017-04-04 20:16:59.756000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/16/160616-addSizeCategoryAttribute.sql','2017-04-04 20:16:59.759000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/16/160626-createIndexOnFinishTimeScheduledExecution.sql','2017-04-04 20:16:59.817000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/16/160725-anonymousLogin.sql','2017-04-04 20:16:59.819000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/16/160916-addEntityIdToFtsQueue.sql','2017-04-04 20:16:59.821000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/16/270916-addEntityIdToQueryResult.sql','2017-04-04 20:16:59.823000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('10-cuba/update/hsql/16/280916-removeNotNullEntityOnQueryResult.sql','2017-04-04 20:16:59.824000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/update/hsql/17/170330-1-createAmsNewAssetSuplierLink.sql','2017-04-04 20:16:59.826000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/update/hsql/17/170330-1-createAsset.sql','2017-04-04 20:16:59.828000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/update/hsql/17/170330-1-createInstance.sql','2017-04-04 20:16:59.830000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/update/hsql/17/170330-1-createNewAsset.sql','2017-04-04 20:16:59.832000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/update/hsql/17/170330-1-createRequestAsset.sql','2017-04-04 20:16:59.833000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/update/hsql/17/170330-1-createResponceRequest.sql','2017-04-04 20:16:59.835000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/update/hsql/17/170330-1-createSuplier.sql','2017-04-04 20:16:59.837000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/update/hsql/17/170330-2-createAmsNewAssetSuplierLink.sql','2017-04-04 20:16:59.838000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/update/hsql/17/170330-2-createNewAsset.sql','2017-04-04 20:16:59.849000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/update/hsql/17/170330-2-updateInstance.sql','2017-04-04 20:16:59.850000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/update/hsql/17/170330-2-updateNewAsset.sql','2017-04-04 20:16:59.852000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/update/hsql/17/170331-1-createAssetAllocated.sql','2017-04-04 20:16:59.853000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/update/hsql/17/170331-2-updateAssetAllocated.sql','2017-04-04 20:16:59.855000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/update/hsql/17/170331-2-updateInstance.sql','2017-04-04 20:16:59.857000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/update/hsql/17/170402-2-updateInstance.sql','2017-04-04 20:16:59.859000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/update/hsql/17/170402-2-updateInstance01.sql','2017-04-04 20:16:59.860000',1)
+COMMIT
+INSERT INTO SYS_DB_CHANGELOG VALUES('50-AMS/update/hsql/17/170403-2-updateInstance.sql','2017-04-04 20:16:59.862000',1)
+COMMIT
+DISCONNECT
+/*C9*/SET SCHEMA PUBLIC
+DISCONNECT
+/*C10*/SET SCHEMA PUBLIC
+DISCONNECT
+/*C11*/SET SCHEMA PUBLIC
+DISCONNECT
+/*C12*/SET SCHEMA PUBLIC
+DISCONNECT
+/*C14*/SET SCHEMA PUBLIC
+DISCONNECT
+/*C13*/SET SCHEMA PUBLIC
+DISCONNECT
+/*C15*/SET SCHEMA PUBLIC
+DISCONNECT
+/*C16*/SET SCHEMA PUBLIC
+DISCONNECT
+/*C17*/SET SCHEMA PUBLIC
+DISCONNECT
+/*C18*/SET SCHEMA PUBLIC
+INSERT INTO SYS_SERVER VALUES('5554888e-59e5-71db-5c83-e685ab0ba4a8','2017-04-04 20:19:58.334000',NULL,'2017-04-04 20:19:58.334000',NULL,'localhost:8080/app-core',TRUE,NULL)
+COMMIT
+DELETE FROM SYS_SERVER WHERE ID='5554888e-59e5-71db-5c83-e685ab0ba4a8'
+INSERT INTO SYS_SERVER VALUES('5554888e-59e5-71db-5c83-e685ab0ba4a8','2017-04-04 20:19:58.334000',NULL,'2017-04-04 20:20:58.244000',NULL,'localhost:8080/app-core',TRUE,NULL)
+COMMIT
+DELETE FROM SYS_SERVER WHERE ID='5554888e-59e5-71db-5c83-e685ab0ba4a8'
+INSERT INTO SYS_SERVER VALUES('5554888e-59e5-71db-5c83-e685ab0ba4a8','2017-04-04 20:19:58.334000',NULL,'2017-04-04 20:21:58.245000',NULL,'localhost:8080/app-core',TRUE,NULL)
+COMMIT
+DELETE FROM SYS_SERVER WHERE ID='5554888e-59e5-71db-5c83-e685ab0ba4a8'
+INSERT INTO SYS_SERVER VALUES('5554888e-59e5-71db-5c83-e685ab0ba4a8','2017-04-04 20:19:58.334000',NULL,'2017-04-04 20:22:58.245000',NULL,'localhost:8080/app-core',TRUE,NULL)
+COMMIT
+DELETE FROM SYS_SERVER WHERE ID='5554888e-59e5-71db-5c83-e685ab0ba4a8'
+INSERT INTO SYS_SERVER VALUES('5554888e-59e5-71db-5c83-e685ab0ba4a8','2017-04-04 20:19:58.334000',NULL,'2017-04-04 20:23:58.245000',NULL,'localhost:8080/app-core',TRUE,NULL)
+COMMIT
+DELETE FROM SYS_SERVER WHERE ID='5554888e-59e5-71db-5c83-e685ab0ba4a8'
+INSERT INTO SYS_SERVER VALUES('5554888e-59e5-71db-5c83-e685ab0ba4a8','2017-04-04 20:19:58.334000',NULL,'2017-04-04 20:24:58.245000',NULL,'localhost:8080/app-core',TRUE,NULL)
+COMMIT
+DELETE FROM SYS_SERVER WHERE ID='5554888e-59e5-71db-5c83-e685ab0ba4a8'
+INSERT INTO SYS_SERVER VALUES('5554888e-59e5-71db-5c83-e685ab0ba4a8','2017-04-04 20:19:58.334000',NULL,'2017-04-04 20:25:58.245000',NULL,'localhost:8080/app-core',TRUE,NULL)
+COMMIT
+DELETE FROM SYS_SERVER WHERE ID='5554888e-59e5-71db-5c83-e685ab0ba4a8'
+INSERT INTO SYS_SERVER VALUES('5554888e-59e5-71db-5c83-e685ab0ba4a8','2017-04-04 20:19:58.334000',NULL,'2017-04-04 20:26:58.245000',NULL,'localhost:8080/app-core',TRUE,NULL)
+COMMIT
+DELETE FROM SYS_SERVER WHERE ID='5554888e-59e5-71db-5c83-e685ab0ba4a8'
+INSERT INTO SYS_SERVER VALUES('5554888e-59e5-71db-5c83-e685ab0ba4a8','2017-04-04 20:19:58.334000',NULL,'2017-04-04 20:27:58.245000',NULL,'localhost:8080/app-core',TRUE,NULL)
+COMMIT
+DELETE FROM SYS_SERVER WHERE ID='5554888e-59e5-71db-5c83-e685ab0ba4a8'
+INSERT INTO SYS_SERVER VALUES('5554888e-59e5-71db-5c83-e685ab0ba4a8','2017-04-04 20:19:58.334000',NULL,'2017-04-04 20:28:58.245000',NULL,'localhost:8080/app-core',TRUE,NULL)
+COMMIT
+DELETE FROM SYS_SERVER WHERE ID='5554888e-59e5-71db-5c83-e685ab0ba4a8'
+INSERT INTO SYS_SERVER VALUES('5554888e-59e5-71db-5c83-e685ab0ba4a8','2017-04-04 20:19:58.334000',NULL,'2017-04-04 20:29:58.246000',NULL,'localhost:8080/app-core',TRUE,NULL)
+COMMIT
+DELETE FROM SYS_SERVER WHERE ID='5554888e-59e5-71db-5c83-e685ab0ba4a8'
+INSERT INTO SYS_SERVER VALUES('5554888e-59e5-71db-5c83-e685ab0ba4a8','2017-04-04 20:19:58.334000',NULL,'2017-04-04 20:30:58.245000',NULL,'localhost:8080/app-core',TRUE,NULL)
+COMMIT
+DELETE FROM SYS_SERVER WHERE ID='5554888e-59e5-71db-5c83-e685ab0ba4a8'
+INSERT INTO SYS_SERVER VALUES('5554888e-59e5-71db-5c83-e685ab0ba4a8','2017-04-04 20:19:58.334000',NULL,'2017-04-04 20:31:58.245000',NULL,'localhost:8080/app-core',TRUE,NULL)
+COMMIT
+DELETE FROM SYS_SERVER WHERE ID='5554888e-59e5-71db-5c83-e685ab0ba4a8'
+INSERT INTO SYS_SERVER VALUES('5554888e-59e5-71db-5c83-e685ab0ba4a8','2017-04-04 20:19:58.334000',NULL,'2017-04-04 20:32:03.837000',NULL,'localhost:8080/app-core',FALSE,NULL)
+COMMIT
+DISCONNECT
